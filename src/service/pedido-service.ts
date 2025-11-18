@@ -32,6 +32,7 @@ export class PedidoService {
     if (!cliente) {
       throw new Error("Erro ao criar cliente");
     }
+    const pedidoCod = `PED-${Date.now()}`;
     const total = this.__calcularTotal(dto.itens);
     const created = dto.itens.forEach(async (pedidoItem) => {
       if (pedidoItem.quantidade < 1) {
@@ -45,7 +46,9 @@ export class PedidoService {
         cliente_telefone: cliente?.telefone || dto.clienteTelefone,
         prato_id: pedidoItem.produtoId,
         quantidade: pedidoItem.quantidade,
-        total: pedidoItem.quantidade * pedidoItem.precoUnitario,
+        codigo: pedidoCod,
+        userId: cliente.userId,
+        total: total,
         status: StatusPedido.CRIADO,
       };
       return await (PedidoModel as any).create(novoPedido);
