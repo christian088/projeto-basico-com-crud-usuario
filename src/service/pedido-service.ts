@@ -13,23 +13,24 @@ export class PedidoService {
     dto.itens.forEach((i) => {
       if (!i.produtoId || i.quantidade < 1 || i.precoUnitario < 0)
         throw new Error("Item inválido");
-    });
+    })
     let cliente = await Cliente.findOne({
       where: { telefone: dto.clienteTelefone },
     });
     if (!cliente) {
       const encrypter = new BcryptAdapter(12);
       const usuarioService = new UsuarioService(encrypter);
-      const usuarioCriado = await usuarioService.criarUsuario({
-        nome: "Cliente",
-        email: `cliente_${Date.now()}@example.com`,
+      const dtoCliente = await usuarioService.criarUsuario({
+        nome: `Cliente_${Date.now()}`,
+        email: `cliente_${Date.now()}@senac.dou.com`,
         telefone: dto.clienteTelefone,
         senha: "cliente123",
         role: "Cliente",
       });
-      cliente = await Cliente.findOne({
-        where: { telefone: usuarioCriado.telefone },
-      });
+      cliente = await usuarioService.__buscarPerfilPorUserId(dtoCliente.id) as Cliente;
+    }
+    if (!cliente) {
+      throw new Error("Erro ao criar cliente");
     }
     const total = this.__calcularTotal(dto.itens);
     const created = dto.itens.forEach(async (pedidoItem) => {
