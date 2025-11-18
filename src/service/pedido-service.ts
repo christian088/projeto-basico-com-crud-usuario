@@ -7,7 +7,7 @@ import { UsuarioService } from "./usuario-service";
 
 export class PedidoService {
   async createPedido(dto: CreatePedidoDTO) {
-    if (!dto?.usuarioId || !Array.isArray(dto.itens) || !dto.itens.length) {
+    if (!Array.isArray(dto.itens) || !dto.itens.length) {
       throw new Error("Dados inválidos");
     }
     dto.itens.forEach((i) => {
